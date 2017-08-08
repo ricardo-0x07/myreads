@@ -13,15 +13,6 @@ class Search extends React.Component {
         search: PropTypes.array.isRequired
     }
 
-    state = {
-        /**
-     * TODO: Instead of using this state variable to keep track of which page
-     * we're on, use the URL in the browser's address bar. This will ensure that
-     * users can use the browser's back and forward buttons to navigate between
-     * pages, as well as provide a good URL they can bookmark and share.
-     */
-        // showSearchPage: false
-    }
     updateReads = (update) => {
         this.props.bookUpdated(update)
     }
@@ -62,14 +53,7 @@ class Search extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-    console.log('state.search', state.search);
     const { books, search } = state;
-    // const { query, search } = search;
-    console.log('query', search.query);
-    console.log('search', search);
-    // const read = lodash.filter(state.books, book => book.shelf === 'read')
-    // const wantToRead = lodash.filter(state.books, book => book.shelf === 'wantToRead')
-    // const currentlyReading = lodash.filter(state.books, book => book.shelf === 'currentlyReading')
 
     return {
         query: search.query,

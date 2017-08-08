@@ -10,15 +10,13 @@ import Read from './Read';
 import { booksFetch, bookUpdated } from '../actions';
 
 class MyReads extends React.Component {
-
-    
+   
     componentWillMount() {
         this.props.booksFetch();
     }
     updateReads = (update) => {
         this.props.bookUpdated(update)
-    }
-    
+    }    
 
     render() {
         console.log('this', this);
