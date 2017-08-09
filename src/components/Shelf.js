@@ -1,18 +1,22 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import '../App.css';
 import Book from './Book';
 
 class CurrentlyReading extends React.Component {
+    static propTypes = {
+        books: PropTypes.array.isRequired,
+        name: PropTypes.string.isRequired,
+        bookUpdated: PropTypes.func.isRequired
+    }
 
     render() {
-        console.log('this', this);
         return (
                 <div className="bookshelf">
-                    <h2 className="bookshelf-title">Currently Reading</h2>
+                    <h2 className="bookshelf-title">{this.props.name}</h2>
                     <div className="bookshelf-books">
                     <ol className="books-grid">
-                        {this.props.currentlyReading.map((book) => (
+                        {this.props.books.map((book) => (
                             <li key={book.id}>
                                 <Book bookUpdated={this.props.bookUpdated} book={book}/>
                             </li>))}

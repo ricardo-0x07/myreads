@@ -3,38 +3,38 @@ import {Link} from 'react-router-dom';
 import lodash from 'lodash';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import * as BooksAPI from '../BooksAPI';
 import '../App.css';
-import { booksSearch, queryUpdate, bookUpdated } from '../actions';
+import { booksSearch, queryUpdate, bookUpdated, booksFetch } from '../actions';
 import Book from './Book';
 
 class Search extends React.Component {
     static propTypes = {
-        search: PropTypes.array.isRequired
+        search: PropTypes.array.isRequired,
+        query: PropTypes.string.isRequired,
+        booksSearch: PropTypes.func.isRequired,
+        bookUpdated: PropTypes.func.isRequired,
+        booksFetch: PropTypes.func.isRequired,
+        queryUpdate: PropTypes.func.isRequired
     }
 
     updateReads = (update) => {
         this.props.bookUpdated(update)
     }
+    clearQuery = () => {
+        this.props.queryUpdate({prop: 'query', value: ''});
+        this.props.booksSearch({query: '', max: 3});
+    }
     updateQuery = (event) => {
         let value =  event.target.value;
-        this.props.queryUpdate({prop: 'query', value})
-        this.props.booksSearch({query: value, max: 3})
+        this.props.queryUpdate({prop: 'query', value});
+        this.props.booksSearch({query: value, max: 3});
     }
     render() {
         return (
             <div className="search-books">
                 <div className="search-books-bar">
-                    <Link className="close-search" to="/">Close</Link>
+                    <Link className="close-search" to="/" onClick={this.clearQuery}>Close</Link>
                     <div className="search-books-input-wrapper">
-                        {/*
-                  NOTES: The search from BooksAPI is limited to a particular set of search terms.
-                  You can find these search terms here:
-                  https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md
-
-                  However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
-                  you don't find a specific author or title. Every search is limited by search terms.
-                */}
                         <input type="text" value={this.props.query} onChange={this.updateQuery} placeholder="Search by title or author"/>
 
                     </div>
@@ -52,17 +52,25 @@ class Search extends React.Component {
     }
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
     const { books, search } = state;
-
+    let tempSearch = search.search;
+    books.forEach(book => {
+        let index = lodash.findIndex(tempSearch, item => item.id === book.id);
+        if(index !== -1) {
+            tempSearch = tempSearch.filter(item => item.id !== book.id);
+            tempSearch = [...tempSearch, book];
+        }
+    });
     return {
         query: search.query,
-        search: search.search
+        search: tempSearch
     };
-}
+};
 
 export default connect(mapStateToProps, {
     booksSearch,
     queryUpdate,
-    bookUpdated
-    })(Search);
+    bookUpdated,
+    booksFetch
+})(Search);

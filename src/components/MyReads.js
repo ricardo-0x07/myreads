@@ -1,26 +1,27 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import lodash from 'lodash';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import * as BooksAPI from '../BooksAPI';
 import '../App.css';
-import CurrentlyReading from './CurrentlyReading';
-import WantToRead from './WantToRead';
-import Read from './Read';
+import Shelf from './Shelf';
 import { booksFetch, bookUpdated } from '../actions';
 
 class MyReads extends React.Component {
-   
-    componentWillMount() {
+
+    static propTypes = {
+        read: PropTypes.array.isRequired,
+        wantToRead: PropTypes.array.isRequired,
+        currentlyReading: PropTypes.array.isRequired,
+        booksFetch: PropTypes.func.isRequired,
+        bookUpdated: PropTypes.func.isRequired
+    }
+
+    componentDidMount() {
         this.props.booksFetch();
     }
-    updateReads = (update) => {
-        this.props.bookUpdated(update)
-    }    
 
     render() {
-        console.log('this', this);
-        const { read, currentlyReading, wantToRead, bookUpdated } = this.props;
+        const { read, currentlyReading, wantToRead } = this.props;
         return (
             <div className="list-books">
                 <div className="list-books-title">
@@ -28,9 +29,9 @@ class MyReads extends React.Component {
                 </div>
                 <div className="list-books-content">
                     <div>
-                        <CurrentlyReading bookUpdated={bookUpdated} currentlyReading={currentlyReading}/>
-                        <WantToRead bookUpdated={bookUpdated} wantToRead={wantToRead}/>
-                        <Read bookUpdated={this.updateReads} read={read}/>
+                        <Shelf bookUpdated={this.props.bookUpdated} books={currentlyReading} name={'Currently Reading'}/>
+                        <Shelf bookUpdated={this.props.bookUpdated} books={wantToRead} name={'Want To Read'}/>
+                        <Shelf bookUpdated={this.props.bookUpdated} books={read} name={'Read'}/>
                     </div>
                 </div>
                 <div className="open-search">
@@ -41,18 +42,17 @@ class MyReads extends React.Component {
     }
 }
 
-const mapStateToProps = (state, ownProps) => {
-    console.log('state', state);
-    const read = lodash.filter(state.books, book => book.shelf === 'read')
-    const wantToRead = lodash.filter(state.books, book => book.shelf === 'wantToRead')
-    const currentlyReading = lodash.filter(state.books, book => book.shelf === 'currentlyReading')
+const mapStateToProps = (state) => {
+    const read = state.books.filter(book => book.shelf === 'read');
+    const wantToRead = state.books.filter(book => book.shelf === 'wantToRead');
+    const currentlyReading = state.books.filter(book => book.shelf === 'currentlyReading');
 
     return {
         read,
         wantToRead,
         currentlyReading
     };
-}
+};
 
 export default connect(mapStateToProps, {
     booksFetch,

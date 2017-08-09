@@ -1,3 +1,4 @@
+import lodash from 'lodash';
 import { 
     BOOKS_SEARCH_SUCCESS,
     QUERY_UPDATE,
@@ -7,13 +8,10 @@ import {
 const INITIAL_STATE = {query: '', search: []}
 
 export default (state = INITIAL_STATE, action) => {
-    console.log(action);
     switch (action.type) {
         case BOOKS_SEARCH_SUCCESS:
-            console.log('search action: ', action);
-            return {...state, search: action.payload};
+            return {...state, search: lodash.uniqBy(action.payload, 'id')};
         case BOOKS_SEARCH_FAILURE:
-            console.log('action: ', action);
             return {...state, search: action.payload};
         case QUERY_UPDATE:
             return {...state, query: action.payload};
